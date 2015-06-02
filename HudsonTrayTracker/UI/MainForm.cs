@@ -58,6 +58,8 @@ namespace Hudson.TrayTracker.UI
 
         private void Initialize()
         {
+            projectsGridView.RestoreLayoutToXml("layout.xml");
+            
             ConfigurationService.ConfigurationUpdated += configurationService_ConfigurationUpdated;
             ProjectsUpdateService.ProjectsUpdated += updateService_ProjectsUpdated;
 
@@ -139,6 +141,7 @@ namespace Hudson.TrayTracker.UI
 
         private void HudsonTrayTrackerForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            projectsGridView.SaveLayoutToXml("layout.xml");
             if (exiting == false && e.CloseReason == CloseReason.UserClosing)
             {
                 Hide();
@@ -655,7 +658,6 @@ namespace Hudson.TrayTracker.UI
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-
         }
     }
 }
