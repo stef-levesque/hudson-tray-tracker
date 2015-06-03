@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using DevExpress.XtraEditors;
@@ -15,6 +16,7 @@ using Common.Logging;
 using System.Reflection;
 using DevExpress.XtraGrid.Views.Grid.ViewInfo;
 using System.Diagnostics;
+using Hudson.TrayTracker.Utils.IO;
 using Hudson.TrayTracker.Utils.Logging;
 using DevExpress.Utils.Controls;
 using Hudson.TrayTracker.Utils;
@@ -27,6 +29,10 @@ namespace Hudson.TrayTracker.UI
     public partial class MainForm : DevExpress.XtraEditors.XtraForm
     {
         static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        const string HUDSON_TRAY_TRACKER_DIRECTORY = "Hudson Tray Tracker";
+        const string LAYOUT_FILE = "layout.xml";
+        string userLayoutFile;
 
         public static MainForm Instance
         {
@@ -58,7 +64,13 @@ namespace Hudson.TrayTracker.UI
 
         private void Initialize()
         {
-            projectsGridView.RestoreLayoutToXml("layout.xml");
+            string userAppDataDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string userAppDataPath = PathHelper.Combine(userAppDataDir, HUDSON_TRAY_TRACKER_DIRECTORY);
+            userLayoutFile = PathHelper.Combine(userAppDataPath, LAYOUT_FILE);
+            if (File.Exists(userLayoutFile))
+            {
+                projectsGridView.RestoreLayoutFromXml(userLayoutFile);
+            }
             
             ConfigurationService.ConfigurationUpdated += configurationService_ConfigurationUpdated;
             ProjectsUpdateService.ProjectsUpdated += updateService_ProjectsUpdated;
@@ -141,7 +153,7 @@ namespace Hudson.TrayTracker.UI
 
         private void HudsonTrayTrackerForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            projectsGridView.SaveLayoutToXml("layout.xml");
+            projectsGridView.SaveLayoutToXml(userLayoutFile);
             if (exiting == false && e.CloseReason == CloseReason.UserClosing)
             {
                 Hide();
