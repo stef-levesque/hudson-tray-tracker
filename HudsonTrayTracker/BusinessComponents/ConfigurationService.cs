@@ -15,13 +15,16 @@ namespace Hudson.TrayTracker.BusinessComponents
     {
         public delegate void ConfigurationUpdatedHandler();
         public event ConfigurationUpdatedHandler ConfigurationUpdated;
+        public string LayoutFile { get { return userLayoutFile; } }
 
         static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         const string HUDSON_TRAY_TRACKER_DIRECTORY = "Hudson Tray Tracker";
         const string CONFIGURATION_FILE = "hudson.configuration";
+        const string LAYOUT_FILE = "layout.xml";
 
         string userConfigurationFile;
+        string userLayoutFile;
         Configuration configuration;
 
         public ISet<Server> Servers { get { return configuration.Servers; } }
@@ -33,6 +36,7 @@ namespace Hudson.TrayTracker.BusinessComponents
             string userAppDataDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             string userAppDataPath = PathHelper.Combine(userAppDataDir, HUDSON_TRAY_TRACKER_DIRECTORY);
             userConfigurationFile = PathHelper.Combine(userAppDataPath, CONFIGURATION_FILE);
+            userLayoutFile = PathHelper.Combine(userAppDataPath, LAYOUT_FILE);
 
             // create the directory in case it does not exist
             Directory.CreateDirectory(userAppDataPath);
